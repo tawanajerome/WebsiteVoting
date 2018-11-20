@@ -8,11 +8,15 @@ DataMapper.setup(:default, "sqlite3://#{Dir.pwd}/development.db")
 
 class Login
   include DataMapper::Resource
-  property :id, Serial
-  property :username, String, :required=>true
+  property :username, String, :key=>true
   property :name, String
-  property :password, String
+  property :password, Text
   property :role, String
 end
-
 DataMapper.finalize()
+
+
+
+
+
+
