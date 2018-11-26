@@ -14,15 +14,19 @@ end
 
 
 post '/file' do    #code to read the CSV and update the DB table not working
-  filename = params[:fileupload]
- # return "#{filename.class}"
-  csv_text = File.read(filename)
-  csv = CSV.parse(csv_text, :headers => true)
-  csv.each do |row|
-    Login.create!(row.to_hash)
+  file = params[:file][:tempfile]
+  if file                                 #if the file has contents, erase the lagging characters and split on ,
+    file = file.read.gsub(/\r\n/, ',')
+    fileContent = file.split(',')
+    i = 0
+    while i + 4 < fileContent.length            #for every 4th element add in the username... etc. to the database
+      if i % 4 == 0 && fileContent[i] != 'username'
+        Login.new username: fileContent[i], name: fileContent[i+1], password: BCrypt::Password.create(fileContent[i+2]), role: fileContent[i+3]
+      end
+    end
   end
   #hash all the passwords first then redirect
-  redirect to('homeLOGIN.html')
+ # redirect to('homeLOGIN.html')
 end
 
 
@@ -35,7 +39,7 @@ get '/login' do   #redirects the user based on their role if they've entered in 
   if session[:password] == password
     if @user.role == 'student'         #if the role is a student redirect the page
       redirect to('student.html')
-    else if @user.role == 'instructor'
+    else if @user.role == 'instructor'    #if the role is a teacher redirect the page
            redirect to('instructor.html')
          end
     end
