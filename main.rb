@@ -21,7 +21,7 @@ post '/file' do    #code to read the CSV and update the DB table not working
     fileContent = fileContent.slice(4..(fileContent.length - 1))
     puts "#{fileContent}"
     i = 0
-    while i + 4 < fileContent.length #for every 4th element add in the username... etc. to the database
+    while i < fileContent.length #for every 4th element add in the username... etc. to the database
       if i % 4 == 0
         if Login.get(fileContent[i]) #if the record does not exist in the table already
           break
@@ -30,10 +30,10 @@ post '/file' do    #code to read the CSV and update the DB table not working
           login.save
         end
       end
+      i += 1
     end
   end
-  #hash all the passwords first then redirect
- # redirect to('homeLOGIN.html')
+  redirect to('homeLOGIN.html')       #redirect to the actual login page
 end
 
 
@@ -41,18 +41,25 @@ get '/login' do   #redirects the user based on their role if they've entered in 
   username = params[:username]
   password = params[:password]
   @user = Login.get(username)
-  session[:username] = username
-  session[:password] = BCrypt::Password.new(@user.password)
-  if session[:password] == password
-    if @user.role == 'student'         #if the role is a student redirect the page
-      redirect to('student.html')
-    else if @user.role == 'instructor'    #if the role is a teacher redirect the page
+  if @user
+    session[:role] = @user.role
+    session[:username] = username
+    session[:password] = BCrypt::Password.new(@user.password)
+    if session[:password] == password
+      if @user.role == 'student'         #if the role is a student redirect the page
+        redirect to('student.html')
+      else if @user.role == 'instructor'    #if the role is a teacher redirect the page
            redirect to('instructor.html')
-         end
+          end
+      end
+    else
+      session.clear
+      redirect to('/incorrectlogin.html')
     end
-  else
-    session.clear
-    redirect to('/incorrectlogin.html')
   end
 end
 
+get '/logout' do
+  session.clear
+  redirect to('/login')
+end
