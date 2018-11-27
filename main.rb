@@ -12,7 +12,7 @@ end
 
 
 get '/' do
-  cache_control :public, must_revalidate
+  session.clear
   redirect to('home.html')
 end
 
