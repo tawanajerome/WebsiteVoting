@@ -8,7 +8,11 @@ require 'csv'
 configure do
   enable :sessions
 end
+
+
+
 get '/' do
+  cache_control :public, must_revalidate
   redirect to('home.html')
 end
 
@@ -47,8 +51,10 @@ get '/login' do   #redirects the user based on their role if they've entered in 
     session[:password] = BCrypt::Password.new(@user.password)
     if session[:password] == password
       if @user.role == 'student'         #if the role is a student redirect the page
+        halt(401, 'Not Authorized') unless session[:role] == 'student'
         redirect to('student.html')
       else if @user.role == 'instructor'    #if the role is a teacher redirect the page
+           halt(401, 'Not Authorized') unless session[:role] == 'instructor'
            redirect to('instructor.html')
           end
       end
@@ -61,5 +67,5 @@ end
 
 get '/logout' do
   session.clear
-  redirect to('/login')
+  redirect to('/homeLOGIN.html')
 end
