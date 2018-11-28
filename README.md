@@ -5,7 +5,12 @@
 <p>By Tawana Jerome and Rachel Klesius</p>
 
 <p>
-    All the html,css,JS files must be places in the public folder. The sinatra compiler searches for the folder to parse through html files. 
-    I made 2 classes: login and voting
-    Login table has some values in there but there is an option to read a csv file and read it and fill in the DB table. -Tawana
+   To run: You have the option of uploading your own csv file or just using the csv we provided.
+   Please be aware that your csv needs to be in the form of username,name,password,role. Once you upload your csv you will then be redirected to the actual login page. 
+   Login using any username and password provided in the csv file.
+   
+   Student and Instructor pages should work as expected.
+   
+   
+   
 </p>
