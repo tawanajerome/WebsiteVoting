@@ -9,13 +9,14 @@ configure do
   enable :sessions
 end
 
-
-
 get '/' do
   session.clear
-  redirect to('home.html')
+  redirect to('/upload')
 end
 
+get '/upload' do
+  File.read('home.html')
+end
 
 post '/file' do    #code to read the CSV and update the DB table not working
   file = params[:file][:tempfile]
@@ -37,7 +38,11 @@ post '/file' do    #code to read the CSV and update the DB table not working
       i += 1
     end
   end
-  redirect to('homeLOGIN.html')       #redirect to the actual login page
+  redirect to('/home')       #redirect to the actual login page
+end
+
+get '/home' do
+  File.read('homeLOGIN.html')
 end
 
 
@@ -51,21 +56,33 @@ get '/login' do   #redirects the user based on their role if they've entered in 
     session[:password] = BCrypt::Password.new(@user.password)
     if session[:password] == password
       if @user.role == 'student'         #if the role is a student redirect the page
-        halt(401, 'Not Authorized') unless session[:role] == 'student'
-        redirect to('student.html')
+        redirect to('/student')
       else if @user.role == 'instructor'    #if the role is a teacher redirect the page
-           halt(401, 'Not Authorized') unless session[:role] == 'instructor'
-           redirect to('instructor.html')
+           redirect to('/instructor')
           end
       end
     else
       session.clear
-      redirect to('/incorrectlogin.html')
+      redirect to('/incorrect')
     end
   end
 end
 
+get '/incorrect' do
+  File.read('incorrectlogin.html')
+end
+
+get '/student' do
+  halt(401, 'Not Authorized') unless session[:role] == 'student'
+  File.read('student.html')
+end
+
+get '/instructor' do
+  halt(401, 'Not Authorized') unless session[:role] == 'instructor'
+  File.read('instructor.html')
+end
+
 get '/logout' do
   session.clear
-  redirect to('/homeLOGIN.html')
+  redirect to('/home')
 end
