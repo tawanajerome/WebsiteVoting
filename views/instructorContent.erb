@@ -92,11 +92,19 @@
         <table class="table table-striped">
           <thead>
           <tr>
-            <th>Name</th>
+            <th>Username</th>
             <th>First Place</th>
             <th>Second Place</th>
             <th>Third Place</th>
           </tr>
+          <% Voting.all.each do |votes| %>
+            <tr>
+              <td><%=votes.username %></td>
+              <td><%=votes.first %></td>
+              <td><%=votes.second %></td>
+              <td><%=votes.third %></td>
+            </tr>
+          <% end %>
           </thead>
           <tbody>
           </tbody>

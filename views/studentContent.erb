@@ -40,6 +40,10 @@
       width: 80%;
       border-radius: 20px;
     }
+
+    .content {
+      text-align: center;
+    }
   </style>
 
 </head>
@@ -61,11 +65,58 @@
     </nav>
   </center>
 </div>
-<section class = "content card">
-  <div class = "card-body">
-  <iframe srcdoc="<%= Filenames.get(1).content%>"></iframe>
-  </div>
-</section>
+<br>
+
+<% if Filenames.first.nil? %>
+  <section class = "content card">
+    <div class = "card-body">
+      Your instructor hasn't submitted anything to vote on yet, come back later!
+    </div>
+  </section>
+<% elsif Voting.count(:username => session[:username]) == 0 %>
+  <section class = "content card">
+    <div class = "card-body">
+      <h1>Cast your vote: </h1>
+      <form action="/cast-vote">
+        <div>First place: </div>
+        <select name="first">
+          <% Filenames.all.each do |html| %>
+            <option value="<%=html.filename %>"><%=html.filename %></option>
+          <% end %>
+        </select>
+        <div>Second place: </div>
+        <select name="second">
+          <% Filenames.all.each do |html| %>
+            <option value="<%=html.filename %>"><%=html.filename %></option>
+          <% end %>
+        </select>
+        <div>Third place: </div>
+        <select name="third">
+          <% Filenames.all.each do |html| %>
+            <option value="<%=html.filename %>"><%=html.filename %></option>
+          <% end %>
+        </select>
+        <br>
+        <br>
+        <input type="submit" value="Submit">
+      </form>
+    </div>
+  </section>
+  <br>
+  <% Filenames.all.each do |html| %>
+    <section class = "content card">
+      <h2><%= html.filename %></h2>
+      <iframe srcdoc="<%= html.content%>"></iframe>
+    </section>
+    <br>
+  <% end %>
+<% else %>
+  <section class = "content card">
+    <div class = "card-body">
+      Your vote has been submitted!
+    </div>
+  </section>
+<% end %>
 
 </body>
 </html>

@@ -8,6 +8,8 @@ require 'csv'
 require 'zip'
 
 Voting.auto_migrate!
+Filenames.auto_migrate!
+Login.auto_migrate!
 
 configure do
   enable :sessions
@@ -96,6 +98,17 @@ get '/student' do
   halt(401, 'Not Authorized') unless session[:role] == 'student'
   erb :studentContent
 end
+
+get '/cast-vote' do
+  first = params[:first]
+  second = params[:second]
+  third = params[:third]
+  vote = Voting.new username: session[:username], first: first, second: second, third: third
+  vote.save
+  voted = true
+  redirect to('/student')
+end
+
 
 get '/logout' do
   session.clear
