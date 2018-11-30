@@ -2,8 +2,12 @@ require 'sinatra'
 require 'sinatra/reloader' if development?
 require './login'
 require './voting'
+require './filenames'
 require 'bcrypt'
 require 'csv'
+require 'zip'
+
+Voting.auto_migrate!
 
 configure do
   enable :sessions
@@ -72,14 +76,25 @@ get '/incorrect' do
   File.read('incorrectlogin.html')
 end
 
-get '/student' do
-  halt(401, 'Not Authorized') unless session[:role] == 'student'
-  File.read('student.html')
-end
-
 get '/instructor' do
   halt(401, 'Not Authorized') unless session[:role] == 'instructor'
-  File.read('instructor.html')
+  erb :instructorContent
+end
+
+post '/zip' do
+  zip = params[:zip][:tempfile]
+  Zip::File.open(zip) do |zip_file|
+    zip_file.each do |entry|
+      file = Filenames.new filename: entry.name, content: entry.get_input_stream.read
+      file.save
+    end
+  end
+  redirect to('/instructor')       #redirect back to instructor view
+end
+
+get '/student' do
+  halt(401, 'Not Authorized') unless session[:role] == 'student'
+  erb :studentContent
 end
 
 get '/logout' do

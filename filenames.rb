@@ -6,13 +6,11 @@ require 'bcrypt'
 
 DataMapper.setup(:default, "sqlite3://#{Dir.pwd}/development.db")
 
-class Voting
+class Filenames
   include DataMapper::Resource
   property :id, Serial
-  property :username, String
-  property :first, String
-  property :second, String
-  property :third, String
+  property :filename, String
+  property :content, Text
 end
 
 DataMapper.finalize
